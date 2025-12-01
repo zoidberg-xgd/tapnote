@@ -1,5 +1,7 @@
 # TapNote
 
+[中文](README_CN.md)
+
 TapNote is a minimalist, self-hosted publishing platform inspired by Telegra.ph, focusing on instant Markdown-based content creation. It provides a distraction-free writing experience with instant publishing capabilities, making it perfect for quick notes, blog posts, or documentation sharing.
 
 > Check out the report on creating TapNote on [dev.to](https://dev.to/vorniches/building-self-hosted-telegraph-in-1-prompt-and-3-minutes-2li2) or [YouTube](https://youtu.be/ArPGGaG5EU8).
@@ -80,6 +82,35 @@ https://youtu.be/vz91QpgUjFc?si=6nTE2LeukJprXiw1
 ```
 
 > Note: For correct rendering of code exmaple remove `'` symbols.
+
+## Testing
+
+TapNote includes comprehensive unit and integration tests covering all major components.
+
+### Running Tests
+
+```bash
+# Using Django's test runner
+python manage.py test
+
+# Using the test script
+./run_tests.sh
+
+# With coverage report
+./run_tests.sh --coverage
+
+# For more details, see TESTING.md
+```
+
+### Test Coverage
+
+- ✅ Model tests (Note creation, validation, timestamps)
+- ✅ View tests (all endpoints and edge cases)
+- ✅ Helper function tests (markdown processing, YouTube embeds)
+- ✅ OpenAI integration tests
+- ✅ End-to-end workflow tests
+
+For detailed testing documentation, see [TESTING.md](TESTING.md).
 
 ## Deploying
 

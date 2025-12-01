@@ -57,7 +57,7 @@ def view_note(request, hashcode):
     raw_with_del = apply_strikethrough(note.content)
 
     # THEN convert with standard Markdown (no strikethrough extension)
-    md = markdown.Markdown(extensions=['fenced_code', 'tables'])
+    md = markdown.Markdown(extensions=['fenced_code', 'tables', 'footnotes'])
     html_content = md.convert(raw_with_del)
     html_content = process_markdown_links(html_content)
     
@@ -72,6 +72,7 @@ def view_note(request, hashcode):
         'can_edit': can_edit,
     })
 
+@csrf_exempt
 def edit_note(request, hashcode):
     note = get_object_or_404(Note, hashcode=hashcode)
     edit_token = request.COOKIES.get(f'edit_token_{note.hashcode}')

@@ -3,6 +3,10 @@ services:
   web:
     build: .
     ports:
-      - "9009:9009"
+      - "${PORT:-9009}:9009"
     volumes:
       - .:/app
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=sqlite:////app/db.sqlite3

@@ -16,5 +16,5 @@ RUN chmod -R 755 .
 
 EXPOSE 9009
 
-# Collect static files, apply migrations, and run the server
-CMD ["bash", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:9009"]
+# Collect static files, apply migrations, and run gunicorn
+CMD ["bash", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn prototype.wsgi:application --bind 0.0.0.0:9009 --workers 3"]

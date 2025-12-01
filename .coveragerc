@@ -1,0 +1,31 @@
+[run]
+source = tapnote,prototype
+omit =
+    */migrations/*
+    */tests.py
+    */test_*.py
+    */__init__.py
+    */asgi.py
+    */wsgi.py
+    manage.py
+    */admin.py
+    */apps.py
+    setup.sh
+
+[report]
+precision = 2
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __str__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    if TYPE_CHECKING:
+    @abstractmethod
+
+[html]
+directory = htmlcov
+
+[xml]
+output = coverage.xml
