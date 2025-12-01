@@ -2,16 +2,13 @@
 
 [English](README.md) | [中文](README_CN.md)
 
+> 本项目 Fork 自 [vorniches/tapnote](https://github.com/vorniches/tapnote)
+
 TapNote 是一个极简的自托管发布平台，灵感来自 Telegra.ph，专注于基于 Markdown 的即时内容创作。它提供了无干扰的写作体验和即时发布功能，非常适合快速记录笔记、撰写博客文章或分享文档。
 
 > 查看关于创建 TapNote 的报告：[dev.to](https://dev.to/vorniches/building-self-hosted-telegraph-in-1-prompt-and-3-minutes-2li2) 或 [YouTube](https://youtu.be/ArPGGaG5EU8)。
 
 ![Demo](media/demo.gif)
-<p align="center">
-  <a href="https://tapnote-production.up.railway.app/" target="_blank" style="text-decoration:none;">
-    <img src="https://img.shields.io/badge/Live%20Demo-Tap%20Here-blue?style=for-the-badge" alt="在线演示">
-  </a>
-</p>
 
 ## 功能特点
 
@@ -32,7 +29,7 @@ TapNote 是一个极简的自托管发布平台，灵感来自 Telegra.ph，专�
 
 1. 克隆仓库：
 ```bash
-git clone https://github.com/vorniches/tapnote.git
+git clone https://github.com/zoidberg-xgd/tapnote.git
 cd tapnote
 ```
 
@@ -109,14 +106,6 @@ python manage.py test
 - ✅ 辅助函数测试（Markdown 处理、YouTube 嵌入）
 - ✅ OpenAI 集成测试
 - ✅ 端到端工作流测试
-
-有关详细的测试文档，请参阅 [TESTING.md](TESTING.md)。
-
-## 部署
-
-只需点击几下即可将 TapNote 部署到服务器，并使用 [RailWay](https://railway.com?referralCode=eKC9tt) 或您喜欢的服务连接自定义域名。
-
-详细部署指南请参阅 [DEPLOY.md](DEPLOY.md)。
 
 ## 贡献
 

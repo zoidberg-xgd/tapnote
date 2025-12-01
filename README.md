@@ -2,6 +2,8 @@
 
 [中文](README_CN.md)
 
+> Forked from [vorniches/tapnote](https://github.com/vorniches/tapnote)
+
 TapNote is a minimalist, self-hosted publishing platform inspired by Telegra.ph, focusing on instant Markdown-based content creation. It provides a distraction-free writing experience with instant publishing capabilities, making it perfect for quick notes, blog posts, or documentation sharing.
 
 > Check out the report on creating TapNote on [dev.to](https://dev.to/vorniches/building-self-hosted-telegraph-in-1-prompt-and-3-minutes-2li2) or [YouTube](https://youtu.be/ArPGGaG5EU8).
@@ -32,7 +34,7 @@ TapNote is a minimalist, self-hosted publishing platform inspired by Telegra.ph,
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/vorniches/tapnote.git
+git clone https://github.com/zoidberg-xgd/tapnote.git
 cd tapnote
 ```
 
@@ -109,12 +111,6 @@ python manage.py test
 - ✅ Helper function tests (markdown processing, YouTube embeds)
 - ✅ OpenAI integration tests
 - ✅ End-to-end workflow tests
-
-For detailed testing documentation, see [TESTING.md](TESTING.md).
-
-## Deploying
-
-Deploy TapNote on a server in a few clicks and connect a custom domain with [RailWay](https://railway.com?referralCode=eKC9tt) or your preferred service.
 
 ## Contributing
 
