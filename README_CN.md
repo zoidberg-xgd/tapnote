@@ -14,8 +14,6 @@ TapNote 是一个极简的自托管发布平台，灵感来自 Telegra.ph，专�
 
 > 查看 [FEATURES.md](FEATURES.md) 了解详细功能。
 
-> 查看关于创建 TapNote 的报告：[dev.to](https://dev.to/vorniches/building-self-hosted-telegraph-in-1-prompt-and-3-minutes-2li2) 或 [YouTube](https://youtu.be/ArPGGaG5EU8)。
-
 ![Demo](media/demo.gif)
 
 ## 功能特点
