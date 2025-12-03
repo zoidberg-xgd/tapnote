@@ -1,10 +1,10 @@
 # TapNote
 
-[English](README.md) | [中文](README_CN.md) | [Fork 改进说明](FORK_NOTES.md)
+[English](README.md) | [中文](README_CN.md) | [功能特性](FEATURES.md)
 
-> 本项目 Fork 自 [vorniches/tapnote](https://github.com/vorniches/tapnote)
+TapNote 是一个极简的自托管发布平台，灵感来自 Telegra.ph，专注于基于 Markdown 的即时内容创作。它提供了无干扰的写作体验和即时发布功能，非常适合快速记录笔记、撰写博客文章或分享文档。
 
-**✨ 本 Fork 包含以下重要增强：**
+**✨ 核心功能：**
 - 💬 **评论系统**：段落级评论，集成 ParaNote
 - 👍 **点赞功能**：支持对评论点赞
 - 📦 **数据迁移**：支持导入/导出 JSON 格式
@@ -12,9 +12,7 @@
 - 🧪 **测试与 CI/CD**：完整的测试套件和 GitHub Actions
 - 🛠️ **管理后台**：Django 管理界面
 
-> 查看 [FORK_NOTES.md](FORK_NOTES.md) 了解详细改进。
-
-TapNote 是一个极简的自托管发布平台，灵感来自 Telegra.ph，专注于基于 Markdown 的即时内容创作。它提供了无干扰的写作体验和即时发布功能，非常适合快速记录笔记、撰写博客文章或分享文档。
+> 查看 [FEATURES.md](FEATURES.md) 了解详细功能。
 
 > 查看关于创建 TapNote 的报告：[dev.to](https://dev.to/vorniches/building-self-hosted-telegraph-in-1-prompt-and-3-minutes-2li2) 或 [YouTube](https://youtu.be/ArPGGaG5EU8)。
 
@@ -35,7 +33,7 @@ TapNote 是一个极简的自托管发布平台，灵感来自 Telegra.ph，专�
   - 正确渲染所有 Markdown 元素
   - 支持图片和代码片段
 
-- **增强功能（本 Fork）**
+- **高级功能**
   - 💬 **段落级评论**，集成 ParaNote
   - 👍 **评论点赞系统**
   - 📦 **数据迁移**（导入/导出 JSON）
@@ -131,9 +129,11 @@ python manage.py test
 ## 致谢
 
 - 灵感来自 [Telegra.ph](https://telegra.ph)
+- 最初基于 [vorniches/tapnote](https://github.com/vorniches/tapnote) 的概念
 - 使用 Django 和 Tailwind CSS 构建
-- 使用 [Prototype](https://github.com/vorniches/prototype)、[snap2txt](https://github.com/vorniches/snap2txt) 和 [Cursor](https://cursor.so) 在几分钟内启动
+- 使用 [Prototype](https://github.com/vorniches/prototype)、[snap2txt](https://github.com/vorniches/snap2txt) 和 [Cursor](https://cursor.so)
 - 使用 Google Fonts 的 Space Mono 字体
+- 评论系统由 [ParaNote](https://github.com/zoidberg-xgd/paranote) 提供支持
 
 ## 支持
 

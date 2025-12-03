@@ -1,26 +1,16 @@
 # 贡献指南
 
-感谢您对本项目的关注！本仓库是 [vorniches/tapnote](https://github.com/vorniches/tapnote) 的一个增强版本。
+感谢您对 TapNote 项目的关注！
 
-## 🤔 我应该向哪个仓库贡献？
+## 🤝 如何贡献
 
-### 向原项目贡献（vorniches/tapnote）
-
-如果您的改进是**通用的、核心功能的改进**，建议向原项目提交 PR：
+欢迎向本仓库提交 Pull Request 来改进 TapNote。我们欢迎以下类型的贡献：
+- 新功能开发
 - Bug 修复
-- 核心功能改进
 - 文档改进
 - 测试改进
 - UI/UX 优化
-
-### 向本 Fork 贡献（zoidberg-xgd/tapnote）
-
-如果您的改进是**特定功能的增强**，欢迎向本仓库提交 PR：
-- 评论系统相关功能
-- 数据迁移功能
-- PythonAnywhere 部署相关
-- 特定工具脚本
-- 中文文档
+- 性能优化
 
 ## 📝 提交 Pull Request
 

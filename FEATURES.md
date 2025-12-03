@@ -1,8 +1,8 @@
-# Fork 改进说明
+# TapNote 功能特性
 
-本仓库是 [vorniches/tapnote](https://github.com/vorniches/tapnote) 的一个增强版本，添加了以下功能和改进：
+TapNote 是一个功能丰富的自托管发布平台，支持 Markdown 编辑、段落评论、数据迁移等功能。
 
-## 🆕 新增功能
+## 🆕 核心功能
 
 ### 1. 评论和点赞系统
 - **段落评论功能**：集成了 [ParaNote](https://github.com/zoidberg-xgd/paranote) 评论系统
@@ -45,29 +45,35 @@
 - **文档完善**：补充了部署和使用文档
 - **错误处理**：改进了错误处理和用户体验
 
-## 🚀 使用建议
+## 📊 功能对比
 
-### 如果您想要：
-- **评论功能**：使用本 fork
-- **简单发布**：原项目或本 fork 都可以
-- **数据迁移**：使用本 fork
-- **PythonAnywhere 部署**：使用本 fork
+| 功能 | TapNote |
+|------|---------|
+| Markdown 编辑 | ✅ |
+| 即时发布 | ✅ |
+| 段落级评论 | ✅ |
+| 评论点赞 | ✅ |
+| 数据迁移 | ✅ |
+| PythonAnywhere 部署 | ✅ |
+| 测试框架 | ✅ |
+| CI/CD | ✅ |
+| 中文文档 | ✅ |
+| Django Admin | ✅ |
 
-## 🤝 贡献
+## 🚀 使用场景
 
-欢迎提交 Issue 和 Pull Request！
-
-如果您想向原项目贡献改进，建议：
-1. 通用功能（如测试框架）可以向原项目提交 PR
-2. 特定功能（如评论系统）可以维护在自己的 fork 中
-3. 部署相关功能可以根据原项目维护者的需求决定
+TapNote 适合以下场景：
+- **个人博客**：快速发布 Markdown 文章
+- **团队协作**：通过评论系统进行讨论
+- **内容备份**：使用数据迁移功能备份内容
+- **自托管发布**：完全掌控自己的内容
 
 ## 📝 许可证
 
-与原项目相同，使用 [MIT License](LICENSE)。
+使用 [MIT License](LICENSE)。
 
 ## 🙏 致谢
 
-- 原项目：[vorniches/tapnote](https://github.com/vorniches/tapnote)
-- 评论系统：[ParaNote](https://github.com/zoidberg-xgd/paranote)
-
+- 灵感来自 [Telegra.ph](https://telegra.ph)
+- 最初基于 [vorniches/tapnote](https://github.com/vorniches/tapnote) 的概念
+- 评论系统由 [ParaNote](https://github.com/zoidberg-xgd/paranote) 提供支持

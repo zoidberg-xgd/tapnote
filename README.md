@@ -1,10 +1,10 @@
 # TapNote
 
-[中文](README_CN.md) | [Fork 改进说明](FORK_NOTES.md)
+[中文](README_CN.md) | [功能特性](FEATURES.md)
 
-> Forked from [vorniches/tapnote](https://github.com/vorniches/tapnote)
+TapNote is a minimalist, self-hosted publishing platform inspired by Telegra.ph, focusing on instant Markdown-based content creation. It provides a distraction-free writing experience with instant publishing capabilities, making it perfect for quick notes, blog posts, or documentation sharing.
 
-**✨ This fork includes significant enhancements:**
+**✨ Key Features:**
 - 💬 **Comment System**: Paragraph-level comments with ParaNote integration
 - 👍 **Like Feature**: Like comments on notes
 - 📦 **Data Migration**: Import/Export notes as JSON
@@ -12,9 +12,7 @@
 - 🧪 **Testing & CI/CD**: Comprehensive test suite with GitHub Actions
 - 🛠️ **Admin Panel**: Django admin interface for content management
 
-> See [FORK_NOTES.md](FORK_NOTES.md) for detailed improvements.
-
-TapNote is a minimalist, self-hosted publishing platform inspired by Telegra.ph, focusing on instant Markdown-based content creation. It provides a distraction-free writing experience with instant publishing capabilities, making it perfect for quick notes, blog posts, or documentation sharing.
+> See [FEATURES.md](FEATURES.md) for detailed features and improvements.
 
 > Check out the report on creating TapNote on [dev.to](https://dev.to/vorniches/building-self-hosted-telegraph-in-1-prompt-and-3-minutes-2li2) or [YouTube](https://youtu.be/ArPGGaG5EU8).
 
@@ -35,7 +33,7 @@ TapNote is a minimalist, self-hosted publishing platform inspired by Telegra.ph,
   - Proper rendering of all Markdown elements
   - Support for images and code snippets
 
-- **Enhanced Features (This Fork)**
+- **Advanced Features**
   - 💬 **Paragraph-level comments** with ParaNote integration
   - 👍 **Like system** for comments
   - 📦 **Data migration** (import/export JSON)
@@ -131,9 +129,11 @@ Feel free to submit a Pull Request. For major changes, please open an issue firs
 ## Acknowledgments
 
 - Inspired by [Telegra.ph](https://telegra.ph)
+- Originally based on concepts from [vorniches/tapnote](https://github.com/vorniches/tapnote)
 - Built with Django and Tailwind CSS
-- Kickstarted in minutes using [Prototype](https://github.com/vorniches/prototype), [snap2txt](https://github.com/vorniches/snap2txt) and [Cursor](https://cursor.so)
+- Uses [Prototype](https://github.com/vorniches/prototype), [snap2txt](https://github.com/vorniches/snap2txt) and [Cursor](https://cursor.so)
 - Uses Space Mono font by Google Fonts
+- Comment system powered by [ParaNote](https://github.com/zoidberg-xgd/paranote)
 
 ## Support
 
