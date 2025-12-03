@@ -24,6 +24,11 @@
             </button>
         </div>
     </form>
+    {% if user.is_staff %}
+    <div class="mt-8 text-center text-sm text-gray-400">
+        <a href="{% url 'migration' %}" class="hover:text-gray-600 underline">Data Migration</a>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 

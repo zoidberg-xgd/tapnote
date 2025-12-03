@@ -131,9 +131,19 @@ class ViewsTests(TestCase):
         """Set up test client and sample note"""
         self.client = Client()
         self.note = Note.objects.create(content="# Test Note\n\nThis is test content.")
+        # Create a user so the home view doesn't redirect to setup
+        from django.contrib.auth.models import User
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+    def test_home_redirects_to_setup_if_no_users(self):
+        """Test home view redirects to setup if no users exist"""
+        from django.contrib.auth.models import User
+        User.objects.all().delete()
+        response = self.client.get(reverse('home'))
+        self.assertRedirects(response, reverse('setup_admin'))
 
     def test_home_view(self):
-        """Test home view returns correct template"""
+        """Test home view returns correct template when user exists"""
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'tapnote/editor.html')

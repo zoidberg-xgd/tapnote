@@ -25,7 +25,11 @@ handler404 = 'tapnote.views.handler404'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('setup/', views.setup_admin, name='setup_admin'),
     path('publish/', views.publish, name='publish'),
+    path('migration/', views.migration, name='migration'),
+    path('migration/export/', views.export_data, name='export_data'),
+    path('migration/import/', views.import_data, name='import_data'),
     path('<str:hashcode>/', views.view_note, name='view_note'),
     path('<str:hashcode>/edit/', views.edit_note, name='edit_note'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
