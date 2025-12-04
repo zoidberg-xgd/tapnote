@@ -9,6 +9,7 @@ class Note(models.Model):
     title = models.CharField(max_length=200, blank=True, null=True)
     author = models.CharField(max_length=100, blank=True, null=True)
     content = models.TextField()
+    link_target = models.CharField(max_length=10, default="_blank", choices=[('_blank', 'New Tab'), ('_self', 'Same Tab')])
     edit_token = models.CharField(max_length=64)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)

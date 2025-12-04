@@ -19,13 +19,19 @@
             placeholder="Title"
             value="{% if note and note.title %}{{ note.title }}{% endif %}"
         >
-        <input 
-            type="text" 
-            name="author" 
-            class="w-full px-4 text-sm text-gray-500 focus:outline-none placeholder-gray-300" 
-            placeholder="Your name"
-            value="{% if note and note.author %}{{ note.author }}{% endif %}"
-        >
+        <div class="flex items-center space-x-4 px-4 border-b border-gray-100 pb-2">
+            <input 
+                type="text" 
+                name="author" 
+                class="flex-1 text-sm text-gray-500 focus:outline-none placeholder-gray-300" 
+                placeholder="Your name (optional)"
+                value="{% if note and note.author %}{{ note.author }}{% endif %}"
+            >
+            <select name="link_target" class="text-sm text-gray-400 focus:outline-none bg-transparent cursor-pointer hover:text-gray-600" title="Link opening behavior">
+                <option value="_blank" {% if not note or note.link_target == '_blank' %}selected{% endif %}>↗ New Tab</option>
+                <option value="_self" {% if note.link_target == '_self' %}selected{% endif %}>Current Tab</option>
+            </select>
+        </div>
         <textarea 
             name="content" 
             class="w-full p-4 focus:outline-none resize-none" 

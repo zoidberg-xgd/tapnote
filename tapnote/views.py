@@ -301,10 +301,10 @@ def apply_strikethrough(md_text):
     pattern = re.compile(r'~~(.*?)~~', re.DOTALL)
     return pattern.sub(r'<del>\1</del>', md_text)
 
-def process_markdown_links(html_content):
+def process_markdown_links(html_content, target="_blank"):
     # Keep existing link processing
     pattern = r'<a(.*?)href="(.*?)"(.*?)>'
-    replacement = r'<a\1href="\2"\3 target="_blank" rel="noopener noreferrer">'
+    replacement = f'<a\\1href="\\2"\\3 target="{target}" rel="noopener noreferrer">'
     html_content = re.sub(pattern, replacement, html_content)
 
     # Existing anchor-based YouTube embed:
@@ -357,14 +357,15 @@ def publish(request):
         content = request.POST.get('content', '').strip()
         title = request.POST.get('title', '').strip()
         author = request.POST.get('author', '').strip()
+        link_target = request.POST.get('link_target', '_blank')
         
         if len(content) > MAX_CONTENT_LENGTH:
             return render(request, 'tapnote/editor.html', {
                 'error': f'Content exceeds the limit of {MAX_CONTENT_LENGTH} characters.',
-                'note': {'content': content, 'title': title, 'author': author}
+                'note': {'content': content, 'title': title, 'author': author, 'link_target': link_target}
             })
         if content:
-            note = Note.objects.create(content=content, title=title, author=author)
+            note = Note.objects.create(content=content, title=title, author=author, link_target=link_target)
             response = redirect('view_note', hashcode=note.hashcode)
             # Set cookie with SameSite=Lax for robustness
             response.set_cookie(f'edit_token_{note.hashcode}', note.edit_token, max_age=31536000, samesite='Lax')
@@ -384,7 +385,7 @@ def view_note(request, hashcode):
     # THEN convert with standard Markdown (no strikethrough extension)
     md = markdown.Markdown(extensions=['fenced_code', 'tables', 'footnotes'])
     html_content = md.convert(raw_with_del)
-    html_content = process_markdown_links(html_content)
+    html_content = process_markdown_links(html_content, target=note.link_target)
     
     # Use constant-time comparison for edit token
     cookie_token = request.COOKIES.get(f'edit_token_{note.hashcode}')
@@ -470,6 +471,7 @@ def edit_note(request, hashcode):
         content = request.POST.get('content', '').strip()
         title = request.POST.get('title', '').strip()
         author = request.POST.get('author', '').strip()
+        link_target = request.POST.get('link_target', '_blank')
         
         if len(content) > MAX_CONTENT_LENGTH:
             return render(request, 'tapnote/editor.html', {
@@ -481,6 +483,7 @@ def edit_note(request, hashcode):
             note.content = content
             note.title = title
             note.author = author
+            note.link_target = link_target
             note.save()
             response = redirect('view_note', hashcode=note.hashcode)
             # Refresh cookie on edit
@@ -506,6 +509,7 @@ def export_data(request):
             'content': note.content,
             'title': note.title,
             'author': note.author,
+            'link_target': note.link_target,
             'edit_token': note.edit_token,
             'created_at': note.created_at.isoformat(),
             'updated_at': note.updated_at.isoformat(),
@@ -532,6 +536,8 @@ def import_data(request):
                     'content': item['content'],
                     'edit_token': item['edit_token'],
                 }
+                if 'link_target' in item:
+                    defaults['link_target'] = item['link_target']
                 if 'created_at' in item:
                     defaults['created_at'] = parse_datetime(item['created_at'])
                 
