@@ -25,15 +25,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-
-try:
-    from webdriver_manager.chrome import ChromeDriverManager
-    USE_WEBDRIVER_MANAGER = True
-except ImportError:
-    USE_WEBDRIVER_MANAGER = False
-
 
 def create_driver():
     """Create a headless Chrome WebDriver."""
@@ -48,12 +40,8 @@ def create_driver():
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     )
     
-    if USE_WEBDRIVER_MANAGER:
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-    else:
-        driver = webdriver.Chrome(options=chrome_options)
-    
+    # Use system chromedriver (installed by GitHub Actions)
+    driver = webdriver.Chrome(options=chrome_options)
     return driver
 
 
