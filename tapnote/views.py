@@ -355,13 +355,16 @@ def setup_admin(request):
 def publish(request):
     if request.method == 'POST':
         content = request.POST.get('content', '').strip()
+        title = request.POST.get('title', '').strip()
+        author = request.POST.get('author', '').strip()
+        
         if len(content) > MAX_CONTENT_LENGTH:
             return render(request, 'tapnote/editor.html', {
                 'error': f'Content exceeds the limit of {MAX_CONTENT_LENGTH} characters.',
-                'note': {'content': content}
+                'note': {'content': content, 'title': title, 'author': author}
             })
         if content:
-            note = Note.objects.create(content=content)
+            note = Note.objects.create(content=content, title=title, author=author)
             response = redirect('view_note', hashcode=note.hashcode)
             response.set_cookie(f'edit_token_{note.hashcode}', note.edit_token, max_age=31536000)
             return response
@@ -390,10 +393,43 @@ def view_note(request, hashcode):
         (url_token and constant_time_compare(str(url_token), str(note.edit_token)))
     )
     
+    # Extract title and description for meta tags
+    lines = note.content.strip().split('\n')
+    full_text = note.content.strip()
+    meta_title = "TapNote"
+    meta_description = "A simple markdown note."
+
+    # Determine Title
+    if note.title:
+        meta_title = note.title
+    elif lines:
+        # First line as title, clean up markdown headers
+        candidate_title = re.sub(r'^#+\s*', '', lines[0]).strip()
+        if candidate_title:
+            meta_title = candidate_title[:60]
+
+    # Determine Description
+    if lines:
+        if note.title:
+            # If we have an explicit title, the description starts from the beginning of content
+            meta_description = full_text[:200]
+        elif len(lines) > 1:
+            # If title was inferred from first line, skip it in description
+            meta_description = full_text[len(lines[0]):].strip()[:200]
+        else:
+            meta_description = full_text[:200]
+    
+    if note.author:
+        meta_description = f"By {note.author}. {meta_description}"
+
+    # Clean up description (remove markdown chars roughly if needed, but simple truncation is okay for now)
+    
     return render(request, 'tapnote/view_note.html', {
         'note': note,
         'content': html_content,
         'can_edit': can_edit,
+        'meta_title': meta_title,
+        'meta_description': meta_description,
     })
 
 @csrf_exempt
@@ -413,6 +449,8 @@ def edit_note(request, hashcode):
     
     if request.method == 'POST':
         content = request.POST.get('content', '').strip()
+        title = request.POST.get('title', '').strip()
+        author = request.POST.get('author', '').strip()
         
         if len(content) > MAX_CONTENT_LENGTH:
             return render(request, 'tapnote/editor.html', {
@@ -422,6 +460,8 @@ def edit_note(request, hashcode):
             
         if content:
             note.content = content
+            note.title = title
+            note.author = author
             note.save()
             return redirect('view_note', hashcode=note.hashcode)
     
@@ -442,6 +482,8 @@ def export_data(request):
         data.append({
             'hashcode': note.hashcode,
             'content': note.content,
+            'title': note.title,
+            'author': note.author,
             'edit_token': note.edit_token,
             'created_at': note.created_at.isoformat(),
             'updated_at': note.updated_at.isoformat(),
@@ -486,5 +528,8 @@ def import_data(request):
             return render(request, 'tapnote/migration.html', {'success': f'Successfully imported {count} notes.'})
         except Exception as e:
             return render(request, 'tapnote/migration.html', {'error': f'Error importing file: {str(e)}'})
+            
+    return redirect('migration')
+pnote/migration.html', {'error': f'Error importing file: {str(e)}'})
             
     return redirect('migration')

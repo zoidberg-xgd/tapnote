@@ -4,6 +4,8 @@ from django.utils import timezone
 
 class Note(models.Model):
     hashcode = models.CharField(max_length=32, unique=True)
+    title = models.CharField(max_length=200, blank=True, null=True)
+    author = models.CharField(max_length=100, blank=True, null=True)
     content = models.TextField()
     edit_token = models.CharField(max_length=64)
     created_at = models.DateTimeField(default=timezone.now)

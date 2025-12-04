@@ -12,11 +12,25 @@
     {% endif %}
     <form method="post" action="{% if note %}{% url 'edit_note' note.hashcode %}{% else %}{% url 'publish' %}{% endif %}" class="space-y-4">
         {% csrf_token %}
+        <input 
+            type="text" 
+            name="title" 
+            class="w-full p-4 text-4xl font-bold focus:outline-none placeholder-gray-300" 
+            placeholder="Title"
+            value="{% if note and note.title %}{{ note.title }}{% endif %}"
+        >
+        <input 
+            type="text" 
+            name="author" 
+            class="w-full px-4 text-sm text-gray-500 focus:outline-none placeholder-gray-300" 
+            placeholder="Your name"
+            value="{% if note and note.author %}{{ note.author }}{% endif %}"
+        >
         <textarea 
             name="content" 
             class="w-full p-4 focus:outline-none resize-none" 
             style="height:auto; overflow-y:hidden;"
-            placeholder="write in markdown"
+            placeholder="Your story..."
         >{% if note %}{{ note.content }}{% endif %}</textarea>
         <div class="flex justify-end">
             <button type="submit" class="px-6 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors">

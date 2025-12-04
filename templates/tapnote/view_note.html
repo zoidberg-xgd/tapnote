@@ -1,6 +1,16 @@
 {% extends 'tapnote/base.html' %}
 {% load static %}
 
+{% block meta %}
+<meta property="og:title" content="{{ meta_title }}">
+<meta property="og:description" content="{{ meta_description }}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="TapNote">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ meta_title }}">
+<meta name="twitter:description" content="{{ meta_description }}">
+{% endblock %}
+
 {% block content %}
 <div class="container mx-auto px-4 py-8 max-w-3xl">
     {% if can_edit %}
@@ -10,6 +20,22 @@
         </a>
     </div>
     {% endif %}
+    
+    {% if note.title or note.author %}
+    <header class="mb-8 border-b border-gray-100 pb-8">
+        {% if note.title %}
+        <h1 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900 leading-tight">{{ note.title }}</h1>
+        {% endif %}
+        <div class="flex items-center text-sm text-gray-500 space-x-3 font-mono">
+            {% if note.author %}
+            <span class="font-bold text-gray-700">{{ note.author }}</span>
+            <span>&middot;</span>
+            {% endif %}
+            <time datetime="{{ note.created_at|date:'c' }}">{{ note.created_at|date:"M d, Y" }}</time>
+        </div>
+    </header>
+    {% endif %}
+
     <div class="markdown-content"
          data-na-root
          data-work-id="{{ note.hashcode }}"
