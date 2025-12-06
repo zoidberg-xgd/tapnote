@@ -8,24 +8,111 @@ PythonAnywhere does NOT provide an API for extending expiry, so browser automati
 is required.
 
 Requirements:
-    pip install selenium webdriver-manager
+    pip install selenium webdriver-manager pyyaml
 
-Environment Variables:
-    PA_USERNAME: Your PythonAnywhere username
-    PA_PASSWORD: Your PythonAnywhere password
-    PA_DOMAIN: (Optional) Your webapp domain, defaults to {username}.pythonanywhere.com
+Configuration:
+    The script reads credentials from (in order of priority):
+    1. Environment variables (PA_USERNAME, PA_PASSWORD, PA_DOMAIN)
+    2. Config file: config/pa_config.yaml or pa_config.yaml
+    
+    Config file format (YAML):
+        pythonanywhere:
+          username: your_username
+          password: your_password
+          domain: your_domain.pythonanywhere.com  # optional
 """
 import os
 import re
 import sys
 import time
+from pathlib import Path
 
+import yaml
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
+
+def load_config():
+    """Load configuration from YAML file.
+    
+    Searches for config file in the following locations:
+    1. config/pa_config.yaml (relative to script)
+    2. pa_config.yaml (relative to script)
+    3. config/pa_config.yaml (relative to cwd)
+    4. pa_config.yaml (relative to cwd)
+    
+    Returns:
+        dict: Configuration dictionary or empty dict if not found.
+    """
+    script_dir = Path(__file__).parent
+    search_paths = [
+        script_dir / "config" / "pa_config.yaml",
+        script_dir / "pa_config.yaml",
+        script_dir.parent / "config" / "pa_config.yaml",
+        Path.cwd() / "config" / "pa_config.yaml",
+        Path.cwd() / "pa_config.yaml",
+    ]
+    
+    for config_path in search_paths:
+        if config_path.exists():
+            print(f"📄 Loading config from: {config_path}")
+            try:
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    return yaml.safe_load(f) or {}
+            except yaml.YAMLError as e:
+                print(f"⚠️  Error parsing config file: {e}")
+                return {}
+    
+    return {}
+
+
+def get_credentials():
+    """Get credentials from environment variables or config file.
+    
+    Priority:
+    1. Environment variables (PA_USERNAME, PA_PASSWORD, PA_DOMAIN)
+    2. Config file
+    
+    Returns:
+        tuple: (username, password, domain) or raises SystemExit if not found.
+    """
+    # Try environment variables first
+    username = os.environ.get('PA_USERNAME')
+    password = os.environ.get('PA_PASSWORD')
+    domain = os.environ.get('PA_DOMAIN')
+    
+    # Fall back to config file
+    if not username or not password:
+        config = load_config()
+        pa_config = config.get('pythonanywhere', {})
+        
+        if not username:
+            username = pa_config.get('username')
+        if not password:
+            password = pa_config.get('password')
+        if not domain:
+            domain = pa_config.get('domain')
+    
+    # Validate required fields
+    if not username or not password:
+        print("❌ Error: Credentials not found.")
+        print("   Please set PA_USERNAME and PA_PASSWORD environment variables,")
+        print("   or create a config file (config/pa_config.yaml) with:")
+        print("   pythonanywhere:")
+        print("     username: your_username")
+        print("     password: your_password")
+        sys.exit(1)
+    
+    # Default domain
+    if not domain:
+        domain = f'{username}.pythonanywhere.com'
+    
+    return username, password, domain
+
 
 def create_driver():
     """Create a headless Chrome WebDriver."""
@@ -192,14 +279,7 @@ def renew_tasks(driver, username):
 
 
 def renew_pythonanywhere():
-    username = os.environ.get('PA_USERNAME')
-    password = os.environ.get('PA_PASSWORD')
-    
-    if not username or not password:
-        print("❌ Error: PA_USERNAME and PA_PASSWORD environment variables are required.")
-        sys.exit(1)
-
-    domain = os.environ.get('PA_DOMAIN', f'{username}.pythonanywhere.com')
+    username, password, domain = get_credentials()
 
     print(f"🚀 Starting PythonAnywhere renewal for user: '{username}'")
     print(f"🎯 Webapp domain: '{domain}'")

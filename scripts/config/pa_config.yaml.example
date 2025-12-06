@@ -1,0 +1,11 @@
+# PythonAnywhere Configuration
+# Copy this file to pa_config.yaml and fill in your credentials
+# 
+# WARNING: Do NOT commit pa_config.yaml with real credentials to version control!
+# Add pa_config.yaml to .gitignore
+
+pythonanywhere:
+  username: your_username
+  password: your_password
+  # domain is optional, defaults to {username}.pythonanywhere.com
+  # domain: your_domain.pythonanywhere.com
