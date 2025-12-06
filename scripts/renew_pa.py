@@ -33,11 +33,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 try:
     from webdriver_manager.chrome import ChromeDriverManager
-    from selenium.webdriver.chrome.service import Service
     HAS_WEBDRIVER_MANAGER = True
 except ImportError:
     HAS_WEBDRIVER_MANAGER = False
@@ -122,31 +122,93 @@ def get_credentials():
 
 
 def create_driver():
-    """Create a headless Chrome WebDriver."""
+    """Create a headless Chrome WebDriver.
+    
+    Tries multiple methods to create a working driver:
+    1. webdriver-manager with auto-detection
+    2. System chromedriver
+    3. Chromium with chromium-driver (for Docker/Linux)
+    """
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--remote-debugging-port=9222")
     chrome_options.add_argument(
         "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     )
     
-    # Try webdriver_manager first, fall back to system chromedriver
+    errors = []
+    
+    # Method 1: Try webdriver_manager
     if HAS_WEBDRIVER_MANAGER:
         try:
-            print("📦 Using webdriver-manager to get chromedriver...")
+            print("📦 Method 1: Using webdriver-manager...")
             service = Service(ChromeDriverManager().install())
             driver = webdriver.Chrome(service=service, options=chrome_options)
+            print("✅ webdriver-manager succeeded")
             return driver
         except Exception as e:
-            print(f"⚠️  webdriver-manager failed: {e}, trying system chromedriver...")
+            errors.append(f"webdriver-manager: {e}")
+            print(f"⚠️  webdriver-manager failed: {e}")
     
-    # Fall back to system chromedriver
-    driver = webdriver.Chrome(options=chrome_options)
-    return driver
+    # Method 2: Try system chromedriver directly
+    try:
+        print("📦 Method 2: Using system chromedriver...")
+        driver = webdriver.Chrome(options=chrome_options)
+        print("✅ System chromedriver succeeded")
+        return driver
+    except Exception as e:
+        errors.append(f"system chromedriver: {e}")
+        print(f"⚠️  System chromedriver failed: {e}")
+    
+    # Method 3: Try with explicit chromedriver paths
+    chromedriver_paths = [
+        "/usr/bin/chromedriver",
+        "/usr/local/bin/chromedriver",
+        "/snap/bin/chromium.chromedriver",
+    ]
+    for path in chromedriver_paths:
+        if os.path.exists(path):
+            try:
+                print(f"📦 Method 3: Trying chromedriver at {path}...")
+                service = Service(executable_path=path)
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                print(f"✅ Chromedriver at {path} succeeded")
+                return driver
+            except Exception as e:
+                errors.append(f"{path}: {e}")
+                print(f"⚠️  {path} failed: {e}")
+    
+    # Method 4: Try chromium binary
+    chromium_binaries = [
+        "/usr/bin/chromium",
+        "/usr/bin/chromium-browser",
+        "/snap/bin/chromium",
+    ]
+    for binary in chromium_binaries:
+        if os.path.exists(binary):
+            try:
+                print(f"📦 Method 4: Trying Chromium at {binary}...")
+                chrome_options.binary_location = binary
+                driver = webdriver.Chrome(options=chrome_options)
+                print(f"✅ Chromium at {binary} succeeded")
+                return driver
+            except Exception as e:
+                errors.append(f"chromium {binary}: {e}")
+                print(f"⚠️  Chromium {binary} failed: {e}")
+    
+    # All methods failed
+    print("\n❌ All methods to create Chrome driver failed:")
+    for err in errors:
+        print(f"   - {err}")
+    print("\n💡 Please ensure Chrome/Chromium and chromedriver are installed:")
+    print("   apt-get install -y chromium chromium-driver")
+    print("   or: apt-get install -y google-chrome-stable")
+    raise RuntimeError("Failed to create Chrome WebDriver")
 
 
 def login(driver, wait, username, password):
