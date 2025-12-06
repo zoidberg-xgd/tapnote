@@ -169,6 +169,7 @@ def create_driver():
     chromedriver_paths = [
         "/usr/bin/chromedriver",
         "/usr/local/bin/chromedriver",
+        "/usr/lib/chromium/chromedriver",  # Alpine Linux
         "/snap/bin/chromium.chromedriver",
     ]
     for path in chromedriver_paths:
@@ -187,6 +188,7 @@ def create_driver():
     chromium_binaries = [
         "/usr/bin/chromium",
         "/usr/bin/chromium-browser",
+        "/usr/lib/chromium/chromium",  # Alpine Linux
         "/snap/bin/chromium",
     ]
     for binary in chromium_binaries:
@@ -206,8 +208,8 @@ def create_driver():
     for err in errors:
         print(f"   - {err}")
     print("\n💡 Please ensure Chrome/Chromium and chromedriver are installed:")
-    print("   apt-get install -y chromium chromium-driver")
-    print("   or: apt-get install -y google-chrome-stable")
+    print("   Alpine (青龙面板): apk add --no-cache chromium chromium-chromedriver")
+    print("   Debian/Ubuntu: apt-get install -y chromium chromium-driver")
     raise RuntimeError("Failed to create Chrome WebDriver")
 
 
