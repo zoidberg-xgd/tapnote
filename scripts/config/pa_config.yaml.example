@@ -3,9 +3,13 @@
 # 
 # WARNING: Do NOT commit pa_config.yaml with real credentials to version control!
 # Add pa_config.yaml to .gitignore
+#
+# IMPORTANT: 
+#   - Use 2 spaces for indentation (NOT tabs)
+#   - Always wrap values in quotes, especially if password contains special characters
 
 pythonanywhere:
-  username: your_username
-  password: your_password
+  username: "your_username"
+  password: "your_password"
   # domain is optional, defaults to {username}.pythonanywhere.com
-  # domain: your_domain.pythonanywhere.com
+  # domain: "your_domain.pythonanywhere.com"
