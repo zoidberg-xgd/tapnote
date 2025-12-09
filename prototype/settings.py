@@ -137,3 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Added for production CSRF checks
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'https://tapnote-production.up.railway.app').split(',')
+
+# Comment System (Paranote) Configuration
+# Set to 'False' to disable comments
+ENABLE_COMMENTS = os.environ.get('ENABLE_COMMENTS', 'True') == 'True'

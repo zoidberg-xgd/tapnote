@@ -13,6 +13,8 @@ class Note(models.Model):
     edit_token = models.CharField(max_length=64)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
+    views = models.IntegerField(default=0)
+    account = models.ForeignKey('TelegraphAccount', on_delete=models.SET_NULL, null=True, blank=True, related_name='pages')
 
     def __str__(self):
         return f"Note {self.hashcode}"
@@ -31,6 +33,20 @@ class Note(models.Model):
                 
         if not self.edit_token:
             self.edit_token = uuid.uuid4().hex
+        super().save(*args, **kwargs)
+
+class TelegraphAccount(models.Model):
+    short_name = models.CharField(max_length=32)
+    author_name = models.CharField(max_length=128, default='Anonymous')
+    author_url = models.URLField(blank=True, default='')
+    access_token = models.CharField(max_length=64, unique=True)
+    
+    def __str__(self):
+        return f"{self.short_name} ({self.author_name})"
+
+    def save(self, *args, **kwargs):
+        if not self.access_token:
+            self.access_token = secrets.token_hex(32)
         super().save(*args, **kwargs)
 
 class Comment(models.Model):

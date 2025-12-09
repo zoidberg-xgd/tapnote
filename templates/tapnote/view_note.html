@@ -63,6 +63,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{% if enable_comments %}
 <!-- ParaNote Integration -->
 <script
   defer
@@ -71,4 +72,5 @@
   data-api-base=""
   {% if can_edit %}data-edit-token="{{ note.edit_token }}"{% endif %}
 ></script>
+{% endif %}
 {% endblock %} 
