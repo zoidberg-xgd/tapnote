@@ -124,10 +124,10 @@ def get_credentials():
 def create_driver():
     """Create a headless Chrome WebDriver.
     
-    Tries multiple methods to create a working driver:
-    1. webdriver-manager with auto-detection
-    2. System chromedriver
-    3. Chromium with chromium-driver (for Docker/Linux)
+    Robust strategy for Qinglong/Docker/Linux environments:
+    1. Explicitly find the Chromium binary and set binary_location.
+    2. Explicitly find the ChromeDriver binary and use it in Service.
+    3. Fallback to webdriver_manager if installed.
     """
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -135,81 +135,108 @@ def create_driver():
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--disable-software-rasterizer")
     chrome_options.add_argument("--remote-debugging-port=9222")
     chrome_options.add_argument(
         "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
         "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     )
+
+    # Proxy Support (Critical for CN servers)
+    # Check both uppercase and lowercase environment variables
+    proxy = (
+        os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy') or
+        os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy') or
+        os.environ.get('ALL_PROXY') or os.environ.get('all_proxy')
+    )
+    if proxy:
+        print(f"🌍 Using proxy: {proxy}")
+        chrome_options.add_argument(f'--proxy-server={proxy}')
     
+    # 1. Find Chromium/Chrome Binary
+    browser_paths = [
+        "/usr/bin/chromium",
+        "/usr/bin/chromium-browser",
+        "/usr/lib/chromium/chromium",
+        "/usr/bin/google-chrome",
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",  # MacOS
+    ]
+    
+    binary_path = None
+    for path in browser_paths:
+        if os.path.exists(path):
+            binary_path = path
+            break
+            
+    if binary_path:
+        print(f"🔎 Found browser binary at: {binary_path}")
+        chrome_options.binary_location = binary_path
+    else:
+        print("ℹ️  No specific browser binary found in common paths (relying on default resolution)")
+
+    # 2. Find ChromeDriver Binary
+    import shutil
+    driver_paths = [
+        shutil.which("chromedriver"),  # Check PATH first
+        "/usr/bin/chromedriver",
+        "/usr/lib/chromium/chromedriver",
+        "/usr/local/bin/chromedriver",
+        "/snap/bin/chromium.chromedriver",
+    ]
+    
+    driver_path = None
+    for path in driver_paths:
+        if path and os.path.exists(path):
+            driver_path = path
+            break
+
+    # 3. Initialize Driver
+    driver = None
     errors = []
+
+    # Attempt 1: Use found driver binary (if any)
+    if driver_path:
+        try:
+            print(f"📦 Method 1: Using explicit driver at {driver_path}...")
+            service = Service(executable_path=driver_path)
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            print("✅ Driver initialized successfully")
+            return driver
+        except Exception as e:
+            errors.append(f"Explicit driver {driver_path}: {e}")
+            print(f"⚠️  Failed to use driver at {driver_path}: {e}")
     
-    # Method 1: Try webdriver_manager
+    # Attempt 2: Try system default (no service arg) if Attempt 1 failed or no path found
+    try:
+        print("📦 Method 2: Using system default (PATH)...")
+        driver = webdriver.Chrome(options=chrome_options)
+        print("✅ System default driver succeeded")
+        return driver
+    except Exception as e:
+        errors.append(f"System default: {e}")
+        print(f"⚠️  System default failed: {e}")
+
+    # Attempt 3: webdriver_manager
     if HAS_WEBDRIVER_MANAGER:
         try:
-            print("📦 Method 1: Using webdriver-manager...")
-            service = Service(ChromeDriverManager().install())
+            print("📦 Method 3: Using webdriver-manager...")
+            print("   ⬇️  Attempting to install ChromeDriverManager...")
+            manager_path = ChromeDriverManager().install()
+            print(f"   ✅ Installed at: {manager_path}")
+            service = Service(manager_path)
             driver = webdriver.Chrome(service=service, options=chrome_options)
             print("✅ webdriver-manager succeeded")
             return driver
         except Exception as e:
             errors.append(f"webdriver-manager: {e}")
             print(f"⚠️  webdriver-manager failed: {e}")
-    
-    # Method 2: Try system chromedriver directly
-    try:
-        print("📦 Method 2: Using system chromedriver...")
-        driver = webdriver.Chrome(options=chrome_options)
-        print("✅ System chromedriver succeeded")
-        return driver
-    except Exception as e:
-        errors.append(f"system chromedriver: {e}")
-        print(f"⚠️  System chromedriver failed: {e}")
-    
-    # Method 3: Try with explicit chromedriver paths
-    chromedriver_paths = [
-        "/usr/bin/chromedriver",
-        "/usr/local/bin/chromedriver",
-        "/usr/lib/chromium/chromedriver",  # Alpine Linux
-        "/snap/bin/chromium.chromedriver",
-    ]
-    for path in chromedriver_paths:
-        if os.path.exists(path):
-            try:
-                print(f"📦 Method 3: Trying chromedriver at {path}...")
-                service = Service(executable_path=path)
-                driver = webdriver.Chrome(service=service, options=chrome_options)
-                print(f"✅ Chromedriver at {path} succeeded")
-                return driver
-            except Exception as e:
-                errors.append(f"{path}: {e}")
-                print(f"⚠️  {path} failed: {e}")
-    
-    # Method 4: Try chromium binary
-    chromium_binaries = [
-        "/usr/bin/chromium",
-        "/usr/bin/chromium-browser",
-        "/usr/lib/chromium/chromium",  # Alpine Linux
-        "/snap/bin/chromium",
-    ]
-    for binary in chromium_binaries:
-        if os.path.exists(binary):
-            try:
-                print(f"📦 Method 4: Trying Chromium at {binary}...")
-                chrome_options.binary_location = binary
-                driver = webdriver.Chrome(options=chrome_options)
-                print(f"✅ Chromium at {binary} succeeded")
-                return driver
-            except Exception as e:
-                errors.append(f"chromium {binary}: {e}")
-                print(f"⚠️  Chromium {binary} failed: {e}")
-    
-    # All methods failed
+
+    # Final Failure
     print("\n❌ All methods to create Chrome driver failed:")
     for err in errors:
         print(f"   - {err}")
-    print("\n💡 Please ensure Chrome/Chromium and chromedriver are installed:")
-    print("   Alpine (青龙面板): apk add --no-cache chromium chromium-chromedriver")
-    print("   Debian/Ubuntu: apt-get install -y chromium chromium-driver")
+    print("\n💡 Qinglong/Alpine suggestions:")
+    print("   apk add chromium chromium-chromedriver")
     raise RuntimeError("Failed to create Chrome WebDriver")
 
 
@@ -218,25 +245,43 @@ def login(driver, wait, username, password):
     login_url = 'https://www.pythonanywhere.com/login/'
     
     print(f"\n🔐 Navigating to login page: {login_url}")
-    driver.get(login_url)
-    time.sleep(2)
+    try:
+        driver.get(login_url)
+    except Exception as e:
+        print(f"❌ Failed to load login page: {e}")
+        return False
+
+    time.sleep(5)  # Wait for page load
     
     print("🔑 Filling in login credentials...")
-    username_field = wait.until(
-        EC.presence_of_element_located((By.ID, "id_auth-username"))
-    )
-    username_field.clear()
-    username_field.send_keys(username)
-    
-    password_field = driver.find_element(By.ID, "id_auth-password")
-    password_field.clear()
-    password_field.send_keys(password)
+    try:
+        username_field = wait.until(
+            EC.presence_of_element_located((By.ID, "id_auth-username"))
+        )
+        username_field.clear()
+        username_field.send_keys(username)
+    except TimeoutException:
+        print("❌ Timeout finding username field!")
+        return False
+
+    try:
+        password_field = driver.find_element(By.ID, "id_auth-password")
+        password_field.clear()
+        password_field.send_keys(password)
+    except NoSuchElementException:
+        print("❌ Could not find password field!")
+        return False
     
     print("📤 Submitting login form...")
-    login_button = driver.find_element(By.ID, "id_next")
-    login_button.click()
+    try:
+        login_button = driver.find_element(By.ID, "id_next")
+        login_button.click()
+    except NoSuchElementException:
+        # Try finding button by other means if ID fails
+        login_button = driver.find_element(By.XPATH, "//button[@type='submit']")
+        login_button.click()
     
-    time.sleep(3)
+    time.sleep(5)
     
     if "login" in driver.current_url.lower():
         print("❌ Login failed. Please check your credentials.")
@@ -359,7 +404,45 @@ def renew_tasks(driver, username):
     return True
 
 
+def check_connectivity():
+    """Check if PythonAnywhere is reachable."""
+    # If a proxy is set, we assume connectivity is handled by the proxy
+    # and skip the direct TCP check which would fail in restricted environments.
+    proxy = (
+        os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy') or
+        os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy') or
+        os.environ.get('ALL_PROXY') or os.environ.get('all_proxy')
+    )
+    if proxy:
+        print(f"🌍 Proxy configuration detected: {proxy}")
+        print("   ⏭️  Skipping direct connectivity check (relying on proxy)...")
+        return True
+
+    import socket
+    host = "www.pythonanywhere.com"
+    port = 443
+    timeout = 5
+    
+    print(f"📡 Checking connectivity to {host}...")
+    try:
+        sock = socket.create_connection((host, port), timeout=timeout)
+        sock.close()
+        print(f"   ✅ Successfully connected to {host}")
+        return True
+    except socket.error as e:
+        print(f"   ❌ Connection failed: {e}")
+        print("   ⚠️  Your environment cannot reach PythonAnywhere.")
+        print("   Possible causes:")
+        print("   1. Network firewall or restrictions (China mainland?)")
+        print("   2. DNS resolution failure")
+        print("   3. Proxy required but not configured")
+        return False
+
 def renew_pythonanywhere():
+    if not check_connectivity():
+        print("\n❌ Aborting due to network connectivity issues.")
+        sys.exit(1)
+
     username, password, domain = get_credentials()
 
     print(f"🚀 Starting PythonAnywhere renewal for user: '{username}'")
