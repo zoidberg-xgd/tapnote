@@ -27,7 +27,6 @@ import sys
 import time
 from pathlib import Path
 
-import yaml
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -68,9 +67,13 @@ def load_config():
         if config_path.exists():
             print(f"📄 Loading config from: {config_path}")
             try:
+                import yaml
                 with open(config_path, 'r', encoding='utf-8') as f:
                     return yaml.safe_load(f) or {}
-            except yaml.YAMLError as e:
+            except ImportError:
+                print("⚠️  PyYAML not installed. Skipping YAML config load.")
+                return {}
+            except Exception as e:
                 print(f"⚠️  Error parsing config file: {e}")
                 return {}
     
