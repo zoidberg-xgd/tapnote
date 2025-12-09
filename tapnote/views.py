@@ -486,7 +486,7 @@ def view_note(request, hashcode):
     # Extract title and description for meta tags
     lines = note.content.strip().split('\n')
     full_text = note.content.strip()
-    meta_title = "TapNote"
+    meta_title = "TeleNote"
     meta_description = "A simple markdown note."
 
     # Determine Title
